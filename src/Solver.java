@@ -21,10 +21,10 @@ public class Solver implements AM {
 
     public void run(AMInfo info) {
         Node n = (Node) info.parent.readObject();
-        System.out.println("[" + n.l + " " + n.r + "] Build started.");
+        System.out.println("[start = " + n.st + ", r = " + n.r + ", step = " + n.step + "] Build started.");
 
         long sum = 0L;
-        for(int i = n.l; i <= n.r; i++) {
+        for(int i = n.st; i <= n.r; i+=n.step) {
             if(divNum(i) == 4) {
                 sum += 1;
             }

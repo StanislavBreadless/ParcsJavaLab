@@ -21,7 +21,7 @@ public class Bluck {
             channels.add(c);
         }
         System.out.println("Waiting for result...");
-        for (var c : channels) {
+        for (channel c : channels) {
             x += c.readLong();
         }
         System.out.println("Result: " + x);
@@ -37,14 +37,9 @@ public class Bluck {
         System.out.println(r);
         ArrayList<Node> res = new ArrayList<>();
 
-        int _l = l;
-        int seg_len = (r - l + 1) / NODES;
-
         for (int i = 0; i < NODES - 1; i++) {
-            res.add(new Node(_l, _l + seg_len - 1));
-            _l += seg_len;
+            res.add(new Node(l + i, r, NODES));
         }
-        res.add(new Node(_l, r));
 
         return res;
     }
