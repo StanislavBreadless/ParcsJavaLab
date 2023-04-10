@@ -29,7 +29,7 @@ public class Solver implements AM {
                 sum += 1;
             }
         }
-        System.out.println("[" + n.l + " " + n.r + "] Build finished.");
+        System.out.println("[start = " + n.st + ", r = " + n.r + ", step = " + n.step + "] Build finished.");
         info.parent.write(sum);
     }
 }
