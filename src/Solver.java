@@ -1,8 +1,6 @@
 import parcs.*;
 
 public class Solver implements AM {
-    private static final int NODES = 4;
-
     private int divNum(int x) {
         if(x == 1) return 1;
         if(x == 2) return 2;

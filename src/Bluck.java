@@ -37,7 +37,7 @@ public class Bluck {
         System.out.println(r);
         ArrayList<Node> res = new ArrayList<>();
 
-        for (int i = 0; i < NODES - 1; i++) {
+        for (int i = 0; i < NODES; i++) {
             res.add(new Node(l + i, r, NODES));
         }
 
