@@ -1,8 +1,29 @@
 import parcs.*;
 import java.math.BigInteger;
+import java.util.HashMap;
+
 
 public class Solver implements AM {
-    public static BigInteger babyStepGiantStep(
+    private static BigInteger modPow(BigInteger base, BigInteger exponent, BigInteger modulus) {
+        if (modulus.equals(BigInteger.ONE)) {
+            return BigInteger.ZERO;
+        }
+
+        BigInteger result = BigInteger.ONE;
+        base = base.mod(modulus);
+
+        while (exponent.compareTo(BigInteger.ZERO) > 0) {
+            if (exponent.and(BigInteger.ONE).equals(BigInteger.ONE)) {
+                result = result.multiply(base).mod(modulus);
+            }
+            exponent = exponent.shiftRight(1);
+            base = base.multiply(base).mod(modulus);
+        }
+
+        return result;
+    }
+    
+    private static BigInteger babyStepGiantStep(
         BigInteger p, 
         BigInteger g, 
         BigInteger h,
@@ -20,7 +41,7 @@ public class Solver implements AM {
 
         // Compute the giant steps
         BigInteger invGamma = gamma.modInverse(p);
-        BigInteger y = h.multiply(invGamma.pow(giant_step_l)).mod(p);
+        BigInteger y = h.multiply(modPow(invGamma, giant_step_l, p)).mod(p);
         for (BigInteger i = giant_step_l; i.compareTo(giant_step_r) < 0; i = i.add(BigInteger.ONE)) {
             if (babySteps.containsKey(y)) {
                 return i.multiply(m).add(babySteps.get(y));
