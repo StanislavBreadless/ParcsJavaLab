@@ -26,18 +26,18 @@ public class Bluck {
 
         System.out.println("Waiting for result...");
         for (channel c : channels) {
-            BigNumber res2 = c.readObject();
+            BigInteger res2 = (BigInteger) c.readObject();
 
             if (res2.compareTo(BigInteger.ZERO) != 0) {
                 res = res2;
             }
         }
-        System.out.println("Result: " + x);
+        System.out.println("Result: " + res);
         curtask.end();
     }
 
-    private static List<BigInteger> readBigIntegersFromFile(String filename) throws FileNotFoundException {
-        List<BigInteger> bigIntegers = new ArrayList<>();
+    private static ArrayList<BigInteger> readBigIntegersFromFile(String filename) throws FileNotFoundException {
+        ArrayList<BigInteger> bigIntegers = new ArrayList<>();
         Scanner scanner = new Scanner(new File(filename));
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
@@ -50,11 +50,28 @@ public class Bluck {
 
     // Returns the smallest integer m such that m^2 >= x
     private static BigInteger sqrtCeil(BigInteger x) {
-        BigInteger m = x.sqrt();
-        if (m.multiply(m).compareTo(x) < 0) {
-            m = m.add(BigInteger.ONE);
+        if (x.compareTo(BigInteger.ZERO) <= 0) {
+            return BigInteger.ZERO;
         }
-        return m;
+
+        BigInteger left = BigInteger.ONE;
+        BigInteger right = x;
+
+        while (left.compareTo(right) < 0) {
+            BigInteger mid = left.add(right).shiftRight(1);
+            BigInteger midSquared = mid.multiply(mid);
+            int cmp = midSquared.compareTo(x);
+
+            if (cmp == 0) {
+                return mid;
+            } else if (cmp < 0) {
+                left = mid.add(BigInteger.ONE);
+            } else {
+                right = mid;
+            }
+        }
+
+        return left;
     }
 
     private static ArrayList<Node> fromFile(String filename) throws Exception {
@@ -62,14 +79,14 @@ public class Bluck {
 
         BigInteger p = params.get(0);
         BigInteger g = params.get(1);
-        BigInteger x = params.get(2);
+        BigInteger n = params.get(2);
 
         BigInteger m = sqrtCeil(p).max(BigInteger.valueOf(MAX_M));
 
         BigInteger giant_steps = ceilDivide(p, m);
         BigInteger giant_steps_per_node = ceilDivide(p, m).divide(BigInteger.valueOf(NODES));
 
-        ArrayList<Node> res = new ArrayList<>();
+        ArrayList<Node> nodes = new ArrayList<>();
 
         BigInteger giant_step_l = BigInteger.valueOf(0);
 
@@ -83,7 +100,7 @@ public class Bluck {
         Node node = new Node(p, g, n, m, giant_step_l, giant_steps);
         nodes.add(node);
 
-        return res;
+        return nodes;
     }
 
     public static BigInteger ceilDivide(BigInteger a, BigInteger b) {

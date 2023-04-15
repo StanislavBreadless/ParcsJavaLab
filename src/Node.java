@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.math.BigInteger;
 
 public class Node implements Serializable {
     public final BigInteger p;
