@@ -1,33 +1,45 @@
 import parcs.*;
 
 public class Solver implements AM {
-    private int divNum(int x) {
-        if(x == 1) return 1;
-        if(x == 2) return 2;
-
-        int div_cnt = 2; // 1 and x
-        for(long i = 2; i * i <= x; i++) {
-            if(x % i == 0) div_cnt += 2;
-            if(i * i == x) div_cnt--;
-
-            // Already more than 4, we don't need to count more
-            if (div_cnt > 4) return div_cnt;
+    public static BigInteger babyStepGiantStep(
+        BigInteger p, 
+        BigInteger g, 
+        BigInteger h,
+        BigInteger giant_step_l,
+        BigInteger giant_step_r,
+        BigInteger m
+    ) {        
+        // Precompute the values of g^(1...m)
+        Map<BigInteger, BigInteger> babySteps = new HashMap<>();
+        BigInteger gamma = BigInteger.ONE;
+        for (BigInteger i = BigInteger.ZERO; i.compareTo(m) < 0; i = i.add(BigInteger.ONE)) {
+            babySteps.put(gamma, i);
+            gamma = gamma.multiply(g).mod(p);
         }
 
-        return div_cnt;
+        // Compute the giant steps
+        BigInteger invGamma = gamma.modInverse(p);
+        BigInteger y = h.multiply(invGamma.pow(giant_step_l)).mod(p);
+        for (BigInteger i = giant_step_l; i.compareTo(giant_step_r) < 0; i = i.add(BigInteger.ONE)) {
+            if (babySteps.containsKey(y)) {
+                return i.multiply(m).add(babySteps.get(y));
+            }
+            y = y.multiply(invGamma).mod(p);
+        }
+        
+        return BigInteger.ZERO; // 0 is the marker that the item is not in the field
     }
+    
 
     public void run(AMInfo info) {
         Node n = (Node) info.parent.readObject();
-        System.out.println("[start = " + n.st + ", r = " + n.r + ", step = " + n.step + "] Build started.");
+        System.out.println("[p = " + n.p + ", g = " + n.g + ", n = " + n.n + ", giant_step_l = " + n.giant_step_l + ", giant_step_r = " + n.giant_step_r + "] Build started.");
 
-        long sum = 0L;
-        for(int i = n.st; i <= n.r; i+=n.step) {
-            if(divNum(i) == 4) {
-                sum += 1;
-            }
-        }
-        System.out.println("[start = " + n.st + ", r = " + n.r + ", step = " + n.step + "] Build finished.");
-        info.parent.write(sum);
+        BigInteger res = babyStepGiantStep(n.p, n.g, n.n, n.giant_step_l, n.giant_step_r, n.m);
+
+        System.out.println("[p = " + n.p + ", g = " + n.g + ", n = " + n.n + ", giant_step_l = " + n.giant_step_l + ", giant_step_r = " + n.giant_step_r + "] Build finished.");
+        System.out.println("result in this node: " + res);
+
+        info.parent.write(res);
     }
 }
